@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Résumé des frais - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Résumé des frais</h2>
+    <a href="{% url 'fees:payment_list' %}" class="btn btn-secondary" title="Retour aux paiements">
+        <i class="bi bi-arrow-left me-1"></i></a>
+</div>
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card stat-card border-success">
+            <div class="card-body">
+                <h6 class="text-uppercase text-success">Total collecté</h6>
+                <h2>{{ total_collected|floatformat:2 }} FC</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card stat-card border-danger">
+            <div class="card-body">
+                <h6 class="text-uppercase text-danger">Total en attente</h6>
+                <h2>{{ total_pending|floatformat:2 }} FC</h2>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <h5>Paiements par statut</h5>
+        <table class="table">
+            <thead><tr><th>Statut</th><th>Nombre</th></tr></thead>
+            <tbody>
+                {% for p in payments_by_status %}
+                <tr><td>{% if p.status == 'paid' %}Payé{% elif p.status == 'pending' %}En attente{% elif p.status == 'overdue' %}En retard{% else %}Partiel{% endif %}</td><td>{{ p.count }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'auth_base.html' %}
+{% block title %}Connexion - Gestion Scolaire{% endblock %}
+{% block content %}
+<div class="auth-card">
+    <div class="card shadow">
+        <div class="card-body p-5">
+            <h2 class="text-center mb-4"><i class="bi bi-mortarboard-fill text-primary"></i> ELEMENTAIRE KOKI 1</h2>
+            <h5 class="text-center text-muted mb-4">Connectez-vous</h5>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                    {% if form.username.errors %}<div class="text-danger small">{{ form.username.errors }}</div>{% endif %}
+                </div>
+                <div class="mb-3">
+                    {{ form.password.label_tag }}
+                    {{ form.password }}
+                    {% if form.password.errors %}<div class="text-danger small">{{ form.password.errors }}</div>{% endif %}
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">Se connecter</button>
+                </div>
+            </form>
+            <div class="text-center mt-3">
+                <a href="{% url 'users:password_reset' %}" class="">Mot de passe oublié ?</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Mes notifications - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Mes notifications</h2>
+    <a href="{% url 'notifications:mark_all_read' %}" class="btn btn-primary">Marquer tout comme lu</a>
+</div>
+{% for n in notifications %}
+<div class="card mb-2 {% if not n.is_read %}border-{% if n.notification_type == 'warning' or n.notification_type == 'fee_alert' %}warning{% elif n.notification_type == 'exam_alert' %}info{% else %}primary{% endif %}{% endif %}">
+    <div class="card-body d-flex justify-content-between align-items-center">
+        <div>
+            <h6 class="mb-1">{{ n.title }}</h6>
+            <p class="mb-1 text-muted small">{{ n.message|truncatechars:150 }}</p>
+            <small class="text-muted">{{ n.created_at|timesince }} il y a</small>
+        </div>
+        {% if not n.is_read %}
+        <a href="{% url 'notifications:mark_read' n.pk %}" class="btn btn-sm btn-success">Marquer comme lu</a>
+        {% else %}
+        <span class="badge bg-success">Lu</span>
+        {% endif %}
+    </div>
+</div>
+{% empty %}
+<div class="text-center text-muted py-5"><h5>Aucune notification.</h5></div>
+{% endfor %}
+{% endblock %}

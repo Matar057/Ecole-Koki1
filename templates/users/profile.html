@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Mon Profil - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                {% if user.profile_picture %}
+                <img src="{{ user.profile_picture.url }}" class="rounded-circle mb-3" width="120" height="120">
+                {% else %}
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:120px;height:120px;font-size:3rem;">
+                    {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                </div>
+                {% endif %}
+                <h4>{{ user.get_full_name }}</h4>
+                <p class="text-muted">{{ user.get_role_display }}</p>
+                <a href="{% url 'users:profile_edit' %}" class="btn btn-sm btn-primary">Modifier le profil</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5>Informations du profil</h5>
+                <table class="table">
+                    <tr><th>E-mail</th><td>{{ user.email }}</td></tr>
+                    <tr><th>Téléphone</th><td>{{ user.phone|default:"Non défini" }}</td></tr>
+                    <tr><th>Adresse</th><td>{{ user.address|default:"Non défini" }}</td></tr>
+                    <tr><th>Membre depuis</th><td>{{ user.date_joined|date:"d/m/Y" }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

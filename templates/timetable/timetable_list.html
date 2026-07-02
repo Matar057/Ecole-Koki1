@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Emploi du temps - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Emploi du temps de la classe</h2>
+    <div>
+        <a href="{% url 'timetable:teacher_timetable' %}" class="btn btn-secondary" title="Planning des enseignants">
+            <i class="bi bi-calendar-week me-1"></i>
+        </a>
+        <a href="{% url 'timetable:slot_create' %}" class="btn btn-primary" title="Ajouter un créneau">
+            <i class="bi bi-person-add me-1"></i>
+        </a>
+    </div>
+</div>
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-auto">
+                <select name="class" class="form-select">
+                    <option value=""><i class="bi bi-collection me-1"></i> Toutes les classes</option>
+                    {% for c in classes %}<option value="{{ c.pk }}" {% if c.pk|stringformat:"s" == selected_class %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary" title="Filtrer">
+                    <i class="bi bi-funnel me-1"></i>
+                </button></div>
+        </form>
+    </div>
+</div>
+<div class="table-responsive">
+    <table class="table table-bordered text-center bg-primary">
+        <thead class="table-info">
+            <tr><th>Heure</th>{% for day_key, day_label in days %}<th>{{ day_label }}</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+            {% for time in time_slots %}
+            <tr>
+                <td class="fw-bold">{{ time }}</td>
+                {% for day_key, day_label in days %}
+                <td>
+                    {% for slot in timetable|default:""|dictsort:"start_time" %}
+                    {% if slot.day == day_key and slot.start_time|time:"H:00" == time %}
+                    <div class="p-2 bg-primary text-white rounded mb-1">
+                        <strong>{{ slot.subject.name }}</strong><br>
+                        <small>{{ slot.teacher.user.get_full_name }}</small><br>
+                        <small>{{ slot.class_obj.name }}</small>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

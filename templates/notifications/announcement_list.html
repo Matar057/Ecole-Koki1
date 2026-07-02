@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Annonces - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Annonces</h2>
+    <a href="{% url 'notifications:announcement_create' %}" class="btn btn-primary" title="Nouvelle annonce">
+        <i class="bi bi-megaphone"></i>
+    </a>
+</div>
+{% for a in announcements %}
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between">
+            <h5>{{ a.title }}</h5>
+            <span class="badge bg-{% if a.priority == 'urgent' %}danger{% elif a.priority == 'high' %}warning{% elif a.priority == 'medium' %}info{% else %}secondary{% endif %}">{% if a.priority == 'urgent' %}Urgent{% elif a.priority == 'high' %}Haute{% elif a.priority == 'medium' %}Moyenne{% else %}Basse{% endif %}</span>
+        </div>
+        <p class="text-muted small">Par {{ a.created_by.get_full_name }} | {{ a.created_at|date:"d/m/Y H:i" }} | Cible : {{ a.get_target_audience_display }}</p>
+        <p>{{ a.content|linebreaks }}</p>
+        <div class="mt-2">
+            <a href="{% url 'notifications:announcement_detail' a.pk %}" class="btn btn-sm btn-info" title="Voir">
+                <i class="bi bi-eye"></i>
+            </a>
+            {% if user.is_admin or user == a.created_by %}
+            <a href="{% url 'notifications:announcement_edit' a.pk %}" class="btn btn-sm btn-warning" title="Modifier">
+                <i class="bi bi-pencil"></i>
+            </a>
+            <a href="{% url 'notifications:announcement_delete' a.pk %}" class="btn btn-sm btn-danger" title="Supprimer">
+                <i class="bi bi-trash"></i>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% empty %}
+<div class="text-center text-muted py-5"><h5>Pas encore d'annonces.</h5></div>
+{% endfor %}
+{% endblock %}

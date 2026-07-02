@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Étudiants - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Étudiants</h2>
+    <a href="{% url 'students:student_create' %}" class="btn btn-primary" title="Ajouter un étudiant"><i class="bi bi-person-add me-1"></i></a>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr><th>ID</th><th>Nom</th><th>Classe</th><th>Section</th><th>Genre</th><th>Parent</th><th>Statut</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    {% for s in students %}
+                    <tr>
+                        <td><a href="{% url 'students:student_detail' s.pk %}">{{ s.student_id }}</a></td>
+                        <td>{{ s.user.get_full_name }}</td>
+                        <td>{{ s.class_enrolled|default:"-" }}</td>
+                        <td>{{ s.section|default:"-" }}</td>
+                        <td>{{ s.get_gender_display }}</td>
+                        <td>{{ s.parent|default:"-" }}</td>
+                        <td><span class="badge bg-{% if s.is_active %}success{% else %}secondary{% endif %}">{% if s.is_active %}Actif{% else %}Inactif{% endif %}</span></td>
+                        <td>
+                            <a href="{% url 'students:student_detail' s.pk %}" class="btn btn-sm btn-info" title="Voir">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{% url 'students:student_edit' s.pk %}" class="btn btn-sm btn-warning" title="Modifier">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form method="post" action="{% url 'students:student_delete' s.pk %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cet étudiant ?')" title="Supprimer">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="8" class="text-center text-muted">Aucun étudiant trouvé.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

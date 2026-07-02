@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Supprimer l'annonce - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card"><div class="card-body text-center">
+            <h4>Supprimer l'annonce ?</h4>
+            <p><strong>{{ announcement.title }}</strong></p>
+            <form method="post">{% csrf_token %}
+                <button type="submit" class="btn btn-danger">Oui, supprimer</button>
+                <a href="{% url 'notifications:announcement_list' %}" class="btn btn-secondary">Annuler</a>
+            </form>
+        </div></div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Sections - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Sections</h2>
+    <a href="{% url 'academics:section_create' %}" class="btn btn-primary" title="Ajouter une section">
+        <i class="bi bi-plus"></i>
+    </a>
+</div>
+<div class="card">
+    <div class="card-body">
+        <table class="table">
+            <thead><tr><th>Nom</th><th>Classe</th><th>Capacité</th></tr></thead>
+            <tbody>
+                {% for s in sections %}
+                <tr><td>{{ s.name }}</td><td>{{ s.class_obj }}</td><td>{{ s.capacity }}</td></tr>
+                {% empty %}
+                <tr><td colspan="3" class="text-center text-muted">Aucune section trouvée.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

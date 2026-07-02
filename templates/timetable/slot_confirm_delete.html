@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Supprimer le créneau - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card"><div class="card-body text-center">
+            <h4>Supprimer le créneau ?</h4>
+            <p><strong>{{ slot.subject }}</strong> le {% if slot.day == 'Monday' %}Lundi{% elif slot.day == 'Tuesday' %}Mardi{% elif slot.day == 'Wednesday' %}Mercredi{% elif slot.day == 'Thursday' %}Jeudi{% elif slot.day == 'Friday' %}Vendredi{% elif slot.day == 'Saturday' %}Samedi{% else %}{{ slot.day }}{% endif %} à {{ slot.start_time }}</p>
+            <form method="post">{% csrf_token %}
+                <button type="submit" class="btn btn-danger">Oui, supprimer</button>
+                <a href="{% url 'timetable:timetable_list' %}" class="btn btn-secondary">Annuler</a>
+            </form>
+        </div></div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Examens - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Examens</h2>
+    <div>
+        {% if selected_class %}
+        <a href="{% url 'exams:exam_list' %}" class="btn btn-secondary btn-sm me-1"><i class="bi bi-x-circle"></i> {{ selected_class.name }}</a>
+        {% endif %}
+        <a href="{% url 'exams:exam_create' %}" class="btn btn-primary" title="Créer un examen"><i class="bi bi-file-earmark-plus me-1"></i></a>
+    </div>
+</div>
+{% if selected_class %}
+<div class="alert alert-info py-2">Examens pour la classe : <strong>{{ selected_class.name }}</strong></div>
+{% endif %}
+<div class="row">
+    {% for e in exams %}
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <h5>{{ e.name }}</h5>
+                    <span class="badge bg-{% if e.is_published %}success{% else %}warning{% endif %}">{{ e.get_exam_type_display }}</span>
+                </div>
+                <p class="text-muted mb-2">{{ e.start_date|date:"d/m/Y" }} - {{ e.end_date|date:"d/m/Y" }}</p>
+                <p class="small">{{ e.description|default:"Aucune description"|truncatechars:150 }}</p>
+                <a href="{% url 'exams:exam_detail' e.pk %}" class="btn btn-sm btn-primary" title="Voir">
+                    <i class="bi bi-eye" ></i>
+                </a>
+                {% if selected_class %}
+                <a href="{% url 'exams:class_results' selected_class.pk e.pk %}" class="btn btn-sm btn-success" title="Résultats de la classe">
+                    <i class="bi bi-people"></i>
+                </a>
+                {% endif %}
+                {% if not e.is_published %}
+                <a href="{% url 'exams:exam_edit' e.pk %}" class="btn btn-sm btn-warning" title="Modifier">
+                    <i class="bi bi-pencil" ></i>
+                </a>
+                <a href="{% url 'exams:exam_subject_add' e.pk %}" class="btn btn-sm btn-info" title="Ajouter une matière">
+                    <i class="bi bi-bookmark-plus"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12"><p class="text-muted">Aucun examen trouvé.</p></div>
+    {% endfor %}
+</div>
+{% endblock %}

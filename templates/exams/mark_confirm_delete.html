@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Supprimer la note - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="card border-danger">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Confirmer la suppression</h5>
+    </div>
+    <div class="card-body">
+        <p>Êtes-vous sûr de vouloir supprimer cette note ?</p>
+        <table class="table table-bordered">
+            <tr>
+                <th width="150">Étudiant</th>
+                <td>{{ mark.student.user.get_full_name }}</td>
+            </tr>
+            <tr>
+                <th>Matière</th>
+                <td>{{ mark.exam_subject.subject }}</td>
+            </tr>
+            <tr>
+                <th>Note</th>
+                <td>{{ mark.marks_obtained }} / {{ mark.exam_subject.max_marks }}</td>
+            </tr>
+            <tr>
+                <th>Grade</th>
+                <td>{{ mark.grade }}</td>
+            </tr>
+        </table>
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-danger">Oui, supprimer</button>
+                <a href="{% url 'exams:marks_list' mark.exam_subject.pk %}" class="btn btn-secondary">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

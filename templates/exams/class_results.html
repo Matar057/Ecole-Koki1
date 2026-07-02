@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block title %}Résultats - {{ class_obj.name }} - {{ exam.name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Résultats de la classe</h2>
+        <p class="text-muted mb-0">{{ class_obj.name }} — {{ exam.name }}</p>
+    </div>
+    <div>
+        <a href="{% url 'exams:exam_detail' exam.pk %}" class="btn btn-secondary" title="Retour">
+            <i class="bi bi-arrow-left me-1"></i>
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-primary">{{ student_results|length }}</h3>
+                <p class="mb-0 text-muted">Étudiants</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-success">{{ class_avg }}/10</h3>
+                <p class="mb-0 text-muted">Moy. de la classe</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                {% with best=student_results|first %}
+                <h3 class="text-info">{% if best and best.moyenne > 0 %}{{ best.moyenne }}/10{% else %}—{% endif %}</h3>
+                {% endwith %}
+                <p class="mb-0 text-muted">Meilleure moy.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                {% with exam_subjects|length as nb_mat %}
+                <h3 class="text-warning">{{ nb_mat }}</h3>
+                {% endwith %}
+                <p class="mb-0 text-muted">Matières</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Rang</th>
+                    <th>Étudiant</th>
+                    {% for es in exam_subjects %}
+                    <th class="text-center">{{ es.subject.name }}<br><small class="text-muted">/10</small></th>
+                    {% endfor %}
+                    <th class="text-center">Moy./10</th>
+                    <th class="text-center">Mention</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in student_results %}
+                <tr>
+                    <td class="text-center"><strong>{{ r.rank }}</strong></td>
+                    <td>{{ r.student.user.get_full_name }}</td>
+                    {% for s in r.subjects %}
+                    <td class="text-center">
+                        {% if s %}
+                            <span class="badge bg-{% if s.grade == 'TB' %}success{% elif s.grade == 'B' %}info{% elif s.grade == 'AB' %}primary{% elif s.grade == 'P' %}warning{% else %}danger{% endif %}">
+                                {{ s.note_sur_10 }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                    <td class="text-center"><strong>{{ r.moyenne }}</strong></td>
+                    <td class="text-center">
+                        {% if r.all_entered %}
+                            {% if r.moyenne >= 9 %}TB
+                            {% elif r.moyenne >= 8 %}B
+                            {% elif r.moyenne >= 7 %}AB
+                            {% elif r.moyenne >= 6 %}P
+                            {% elif r.moyenne >= 5 %}I
+                            {% else %}N
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" title="Actions"><i class="bi bi-gear"></i></button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'exams:report_card' r.student.pk exam.pk %}"><i class="bi bi-eye"></i> Voir bulletin</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                {% for es in exam_subjects %}
+                                <li><a class="dropdown-item" href="{% url 'exams:marks_entry' es.pk %}"><i class="bi bi-pencil"></i> Saisir {{ es.subject.name }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="{{ exam_subjects|length|add:6 }}" class="text-center text-muted">Aucun étudiant dans cette classe.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

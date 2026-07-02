@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}{{ user_obj.get_full_name }} - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Profil utilisateur</h2>
+    <div>
+        <a href="{% url 'users:user_edit' user_obj.pk %}" class="btn btn-warning" title="Modifier">
+            <i class="bi bi-pencil me-1"></i>
+        </a>
+        <a href="{% url 'users:user_list' %}" class="btn btn-secondary"title="Retour">
+            <i class="bi bi-arrow-left me-1"></i>
+        </a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                {% if user_obj.profile_picture %}
+                <img src="{{ user_obj.profile_picture.url }}" class="rounded-circle mb-3" width="120" height="120">
+                {% else %}
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:120px;height:120px;font-size:3rem;">
+                    {{ user_obj.first_name|first|upper }}{{ user_obj.last_name|first|upper }}
+                </div>
+                {% endif %}
+                <h4>{{ user_obj.get_full_name }}</h4>
+                <p class="text-muted mb-0">{{ user_obj.email }}</p>
+                <span class="badge bg-{% if user_obj.role == 'admin' %}danger{% elif user_obj.role == 'teacher' %}info{% elif user_obj.role == 'student' %}success{% else %}secondary{% endif %}">{{ user_obj.get_role_display }}</span>
+                <div class="mt-3">
+                    <span class="badge bg-{% if user_obj.is_active %}success{% else %}secondary{% endif %}">{% if user_obj.is_active %}Actif{% else %}Inactif{% endif %}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Informations personnelles</h5>
+                <table class="table">
+                    <tr><th style="width:200px;">Prénom</th><td>{{ user_obj.first_name }}</td></tr>
+                    <tr><th>Nom</th><td>{{ user_obj.last_name }}</td></tr>
+                    <tr><th>E-mail</th><td>{{ user_obj.email }}</td></tr>
+                    <tr><th>Téléphone</th><td>{{ user_obj.phone|default:"—" }}</td></tr>
+                    <tr><th>Adresse</th><td>{{ user_obj.address|default:"—"|linebreaksbr }}</td></tr>
+                    <tr><th>Nombre d'utilisateur</th><td>{{ user_obj.username }}</td></tr>
+                    <tr><th>Date d'inscription</th><td>{{ user_obj.date_joined|date:"d/m/Y H:i" }}</td></tr>
+                    <tr><th>Dernière connexion</th><td>{{ user_obj.last_login|date:"d/m/Y H:i"|default:"Jamais" }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

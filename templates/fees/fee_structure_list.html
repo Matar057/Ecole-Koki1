@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Structure des frais - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Structure des frais</h2>
+    <a href="{% url 'fees:fee_structure_create' %}" class="btn btn-primary" title="Ajouter des frais"><i class="bi bi-cash-coin"></i></a>
+</div>
+<div class="card">
+    <div class="card-body">
+        <table class="table">
+            <thead><tr><th>Nom</th><th>Classe</th><th>Année</th><th>Montant</th><th>Date d'échéance</th><th>Statut</th></tr></thead>
+            <tbody>
+                {% for f in fees %}
+                <tr>
+                    <td>{{ f.name }}</td>
+                    <td>{{ f.class_obj }}</td>
+                    <td>{{ f.academic_year }}</td>
+                    <td>{{ f.amount }} FC</td>
+                    <td>{{ f.due_date|date:"d/m/Y" }}</td>
+                    <td><span class="badge bg-{% if f.is_active %}success{% else %}secondary{% endif %}">{% if f.is_active %}Actif{% else %}Inactif{% endif %}</span></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted">Aucune structure de frais trouvée.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}{{ announcement.title }} - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h4>{{ announcement.title }}</h4>
+                    <span class="badge bg-{% if announcement.priority == 'urgent' %}danger{% elif announcement.priority == 'high' %}warning{% elif announcement.priority == 'medium' %}info{% else %}secondary{% endif %} fs-6">
+                        {% if announcement.priority == 'urgent' %}Urgent{% elif announcement.priority == 'high' %}Haute{% elif announcement.priority == 'medium' %}Moyenne{% else %}Basse{% endif %}
+                    </span>
+                </div>
+                <p class="text-muted">
+                    Par {{ announcement.created_by.get_full_name }} | {{ announcement.created_at|date:"d/m/Y H:i" }} | Cible : {{ announcement.get_target_audience_display }}
+                </p>
+                <hr>
+                <p>{{ announcement.content|linebreaks }}</p>
+                <div class="mt-4">
+                    <a href="{% url 'notifications:announcement_list' %}" class="btn btn-secondary">Retour</a>
+                    {% if user.is_admin or user == announcement.created_by %}
+                    <a href="{% url 'notifications:announcement_edit' announcement.pk %}" class="btn btn-warning">Modifier</a>
+                    <a href="{% url 'notifications:announcement_delete' announcement.pk %}" class="btn btn-danger">Supprimer</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

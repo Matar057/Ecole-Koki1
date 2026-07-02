@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Ajouter une matière - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h4>Ajouter une matière à l'examen</h4>
+                <form method="post">{% csrf_token %}
+                    {% for field in form %}
+                    <div class="mb-3">{{ field.label_tag }}{{ field }}{% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}</div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                    <a href="{% url 'exams:exam_detail' exam.pk %}" class="btn btn-secondary">Annuler</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

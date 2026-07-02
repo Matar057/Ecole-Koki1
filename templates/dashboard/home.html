@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% block title %}Tableau de bord - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<h2 class="mb-4">Tableau de bord</h2>
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card stat-card border-primary h-100 py-2">
+            <div class="card-body">
+                <div class="row g-0 align-items-center">
+                    <div class="col">
+                        <div class="small fw-bold text-primary text-uppercase mb-1">
+                            <h6>Étudiants</h6>
+                        </div>
+                        <div class="h5 mb-0 fw-bold">{{ student_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-people-fill fs-2 text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card stat-card border-success h-100 py-2">
+            <div class="card-body">
+                <div class="row g-0 align-items-center">
+                    <div class="col">
+                        <div class="small fw-bold text-success text-uppercase mb-1">
+                            <h6>Enseignants</h6>
+                        </div>
+                        <div class="h5 mb-0 fw-bold">{{ teacher_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                       <i class="bi bi-person-badge fs-2 text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card stat-card border-info h-100 py-2">
+            <div class="card-body">
+                <div class="row g-0 align-items-center">
+                    <div class="col">
+                        <div class="small fw-bold text-info text-uppercase mb-1">
+                           <h6>Présence</h6>
+                        </div>
+                        <div class="h5 mb-0 fw-bold">{{ attendance_rate }}%</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-calendar-check-fill fs-2 text-info"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card stat-card border-warning h-100 py-2">
+            <div class="card-body">
+                <div class="row g-0 align-items-center">
+                    <div class="col">
+                        <div class="small fw-bold text-warning text-uppercase mb-1">
+                            <h6>Frais</h6>
+                        </div>
+                        <div class="h5 mb-0 fw-bold">{{ pending_fees }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-cash-stack fs-2 text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0 fw-bold text-primary">Étudiants par classe</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="studentsChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0 fw-bold text-primary">Résumé des présences (30 derniers jours)</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="attendanceChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0 fw-bold text-primary">Examens à venir</h6>
+            </div>
+            <div class="card-body">
+                {% for exam in upcoming_exams %}
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                    <div>
+                        <strong>{{ exam.name }}</strong>
+                        <small class="text-muted d-block">{{ exam.start_date|date:"d/m/Y" }} - {{ exam.end_date|date:"d/m/Y" }}</small>
+                    </div>
+                    <span class="badge bg-info">{{ exam.get_exam_type_display }}</span>
+                </div>
+                {% empty %}
+                <p class="text-muted">Aucun examen à venir.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0 fw-bold text-primary">Annonces récentes</h6>
+            </div>
+            <div class="card-body">
+                {% for ann in recent_announcements %}
+                <div class="py-2 border-bottom">
+                    <strong>{{ ann.title }}</strong>
+                    <span class="badge bg-{% if ann.priority == 'urgent' %}danger{% elif ann.priority == 'high' %}warning{% else %}secondary{% endif %} ms-2">{% if ann.priority == 'urgent' %}Urgent{% elif ann.priority == 'high' %}Haute{% elif ann.priority == 'medium' %}Moyenne{% else %}Basse{% endif %}</span>
+                     <small class="text-muted d-block">{{ ann.created_at|date:"d/m/Y" }}</small>
+                </div>
+                {% empty %}
+                <p class="text-muted">Aucune annonce.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0 fw-bold text-primary">Résumé des frais</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h4 class="text-success">{{ total_collected|floatformat:2 }} FC</h4>
+                        <small class="text-muted">Collecté</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-danger">{{ total_pending|floatformat:2 }} FC</h4>
+                        <small class="text-muted">En attente</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script id="chart-data" type="application/json">{
+    "studentLabels": [{% for c in students_by_class %}"{{ c.class_enrolled__name|default:'Non assigne' }}",{% endfor %}],
+    "studentData": [{% for c in students_by_class %}{{ c.count }},{% endfor %}],
+    "attendancePresent": {{ attendance_summary.present|default:0 }},
+    "attendanceAbsent": {{ attendance_summary.absent|default:0 }},
+    "attendanceLate": {{ attendance_summary.late|default:0 }},
+    "attendanceExcused": {{ attendance_summary.excused|default:0 }}
+}</script>
+<script>
+(function() {
+    var chartDataEl = document.getElementById('chart-data');
+    if (!chartDataEl) return;
+    var chartData = JSON.parse(chartDataEl.textContent);
+
+    var studentsCtx = document.getElementById('studentsChart');
+    if (studentsCtx) {
+        new Chart(studentsCtx, {
+            type: 'bar',
+            data: {
+                labels: chartData.studentLabels,
+                datasets: [{
+                    label: 'Etudiants',
+                    data: chartData.studentData,
+                    backgroundColor: '#4e73df',
+                }]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
+    }
+    var attendanceCtx = document.getElementById('attendanceChart');
+    if (attendanceCtx) {
+        new Chart(attendanceCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Present', 'Absent', 'En retard', 'Excusé'],
+                datasets: [{
+                    data: [
+                        chartData.attendancePresent,
+                        chartData.attendanceAbsent,
+                        chartData.attendanceLate,
+                        chartData.attendanceExcused
+                    ],
+                    backgroundColor: ['#1cc88a', '#e74a3b', '#f6c23e', '#36b9cc']
+                }]
+            },
+            options: { responsive: true }
+        });
+    }
+})();
+</script>
+{% endblock %}

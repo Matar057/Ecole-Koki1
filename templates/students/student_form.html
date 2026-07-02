@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h4>{{ title }}</h4>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h5 class="text-muted mb-3">Compte étudiant</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Prénom</label>
+                            <input type="text" name="first_name" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Nom</label>
+                            <input type="text" name="last_name" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label>E-mail</label>
+                        <input type="email" name="student_email" class="form-control" required>
+                        <!-- <small class="text-muted">Ce sera utilisé pour la connexion</small> -->
+                    </div>
+                    
+                    <h5 class="text-muted mt-4 mb-3">Détails de l'étudiant</h5>
+                    {% for field in student_form %}
+                    {% if field.name != 'parent_full_name' and field.name != 'parent_phone' %}
+                    <div class="mb-3">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+                        {% if field.help_text %}<small class="text-muted">{{ field.help_text }}</small>{% endif %}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    <h5 class="text-muted mt-4 mb-3">Parent / Tuteur</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ student_form.parent_full_name.label_tag }}
+                            {{ student_form.parent_full_name }}
+                            {% if student_form.parent_full_name.errors %}<div class="text-danger small">{{ student_form.parent_full_name.errors }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ student_form.parent_phone.label_tag }}
+                            {{ student_form.parent_phone }}
+                            {% if student_form.parent_phone.errors %}<div class="text-danger small">{{ student_form.parent_phone.errors }}</div>{% endif %}
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Créer l'étudiant</button>
+                    <a href="{% url 'students:student_list' %}" class="btn btn-secondary">Annuler</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

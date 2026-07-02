@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}Bulletin scolaire - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Bulletin scolaire</h2>
+    <div>
+        <a href="{% url 'exams:class_results' student.class_enrolled.pk exam.pk %}" class="btn btn-secondary" title="Retour"><i class="bi bi-arrow-left"></i></a>
+        <a href="{% url 'exams:report_card_pdf' student.pk exam.pk %}" class="btn btn-primary" title="Télécharger PDF"><i class="bi bi-file-earmark-pdf"></i></a>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="text-center mb-4">
+            <h4>ÉCOLE ELEMENTAIRE KOKI 1</h4>
+            <h5>{{ exam.name }} - Bulletin scolaire</h5>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <p><strong>Étudiant :</strong> {{ student.user.get_full_name }}</p>
+                <p><strong>ID :</strong> {{ student.student_id }}</p>
+                <p><strong>Classe :</strong> {{ student.class_enrolled }}</p>
+                <p><strong>Examen :</strong> {{ exam.name }}</p>
+            </div>
+            <div class="col-md-4">
+                <p><strong>Rang :</strong> {{ rank }}<sup>e</sup> / {{ total_students }}</p>
+                <p><strong>Moyenne :</strong> {{ moyenne }}/10</p>
+                <p><strong>Total :</strong> {{ max_marks|default:"—" }}</p>
+            </div>
+            <div class="col-md-4">
+                <p><strong>Moy. de la classe :</strong> {{ class_avg }}/10</p>
+                <p><strong>Mention :</strong>
+                    {% if moyenne >= 9 %}<span class="badge bg-success">Très bien</span>
+                    {% elif moyenne >= 8 %}<span class="badge bg-info">Bien</span>
+                    {% elif moyenne >= 7 %}<span class="badge bg-primary">Assez bien</span>
+                    {% elif moyenne >= 6 %}<span class="badge bg-warning">Passable</span>
+                    {% elif moyenne >= 5 %}<span class="badge bg-secondary">Insuffisant</span>
+                    {% else %}<span class="badge bg-danger">Nul</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        <table class="table table-bordered">
+            <thead class="table">
+                <tr><th>Matière</th><th>Note/10</th><th>Moy. classe</th><th>Mention</th><th>Appréciation</th></tr>
+            </thead>
+            <tbody>
+                {% for m in marks %}
+                <tr>
+                    <td>{{ m.exam_subject.subject.name }}</td>
+                    <td>{{ m.note10 }}</td>
+                    <td>{{ m.class_avg }}</td>
+                    <td><span class="badge bg-{% if m.grade == 'TB' %}success{% elif m.grade == 'B' %}info{% elif m.grade == 'AB' %}primary{% elif m.grade == 'P' %}warning{% else %}danger{% endif %}">{{ m.grade }}</span></td>
+                    <td><small>{{ m.remarks }}</small></td>
+                </tr>
+                {% endfor %}
+                <tr class="table-secondary">
+                    <th>Total</th>
+                    <th>{{ moyenne }}/10</th>
+                    <th>{{ class_avg }}/10</th>
+                    <th colspan="2">
+                        {% if moyenne >= 9 %}Très bien
+                        {% elif moyenne >= 8 %}Bien
+                        {% elif moyenne >= 7 %}Assez bien
+                        {% elif moyenne >= 6 %}Passable
+                        {% elif moyenne >= 5 %}Insuffisant
+                        {% else %}Nul
+                        {% endif %}
+                    </th>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="mt-4">
+            <h6>Appréciation générale</h6>
+            <p class="text-muted">
+                {% if moyenne >= 9 %}Excellent travail ! Félicitations.
+                {% elif moyenne >= 8 %}Très bons résultats. Continuez ainsi.
+                {% elif moyenne >= 7 %}Bons résultats. Peut mieux faire.
+                {% elif moyenne >= 6 %}Résultats passables. Des efforts sont nécessaires.
+                {% elif moyenne >= 5 %}Résultats insuffisants. Doit fournir plus d'efforts.
+                {% else %}Résultats très faibles. Une aide supplémentaire est recommandée.
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="mt-3 p-3 rounded text-center fw-bold {% if passe %}bg-success text-white{% else %}bg-danger text-white{% endif %}">
+            {% if passe %}
+                <i class="bi bi-arrow-up-circle me-1"></i> Admis(e) en {{ next_class.name|default:"classe supérieure" }}
+            {% else %}
+                <i class="bi bi-exclamation-triangle me-1"></i> Redouble ({{ student.class_enrolled.name }})
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

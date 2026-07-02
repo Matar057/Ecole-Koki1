@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Paiement {{ payment.receipt_number }} - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4>Paiement {{ payment.receipt_number }}</h4>
+            <div>
+                <a href="{% url 'fees:payment_list' %}" class="btn btn-secondary btn-sm">Retour</a>
+                <a href="{% url 'fees:payment_receipt' payment.pk %}" class="btn btn-info btn-sm">Télécharger le reçu</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-7">
+                        <table class="table table-borderless">
+                            <tr><th>Étudiant</th><td>{{ payment.student.user.get_full_name }}</td></tr>
+                            <tr><th>Frais</th><td>{{ payment.fee_structure.name }}</td></tr>
+                            <tr><th>Montant dû</th><td>{{ payment.amount_due }} FC</td></tr>
+                            <tr><th>Montant payé</th><td>{{ payment.amount_paid }} FC</td></tr>
+                            <tr><th>Méthode</th>
+                                <td>
+                                    {% if payment.payment_method == 'wave' %}
+                                        <span class="badge bg-primary"><i class="bi bi-phone"></i> Wave</span>
+                                    {% elif payment.payment_method == 'orange_money' %}
+                                        <span class="badge bg-warning text-dark"><i class="bi bi-phone"></i> Orange Money</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr><th>Téléphone</th><td>{{ payment.payment_phone|default:"-" }}</td></tr>
+                            <tr><th>Transaction</th><td>{{ payment.transaction_id|default:"-" }}</td></tr>
+                            <tr><th>Statut</th>
+                                <td><span class="badge bg-{% if payment.status == 'paid' %}success{% elif payment.status == 'pending' %}warning{% elif payment.status == 'overdue' %}danger{% else %}info{% endif %}">{{ payment.get_status_display }}</span></td>
+                            </tr>
+                            <tr><th>Date</th><td>{{ payment.payment_date|date:"d/m/Y"|default:"-" }}</td></tr>
+                            <tr><th>Enregistré par</th><td>{{ payment.paid_by.get_full_name|default:payment.paid_by.email }}</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-5 text-center">
+                        {% if payment.qr_code %}
+                            <div class="border rounded p-3 bg-light">
+                                <img src="{{ payment.qr_code.url }}" alt="QR Code" class="img-fluid" style="max-width: 200px;">
+                                <p class="mt-2 mb-0 small text-muted">Scannez ce code pour voir les détails du paiement</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if payment.remarks %}
+                <div class="mt-3">
+                    <strong>Remarques:</strong>
+                    <p class="mb-0">{{ payment.remarks }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

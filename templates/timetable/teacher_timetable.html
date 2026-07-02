@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Planning des enseignants - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Planning des enseignants</h2>
+    <a href="{% url 'timetable:timetable_list' %}" class="btn btn-secondary" title="Retour">
+        <i class="bi bi-arrow-left me-1"></i>
+    </a>
+</div>
+{% if teacher %}
+<h4>{{ teacher.user.get_full_name }}</h4>
+<div class="table-responsive">
+    <table class="table table-bordered text-center">
+        <thead class="table-dark"><tr><th>Heure</th>{% for day_key, day_label in days %}<th>{{ day_label }}</th>{% endfor %}</tr></thead>
+        <tbody>
+            {% for time in time_slots %}
+            <tr><td class="fw-bold">{{ time }}</td>
+            {% for day_key, day_label in days %}
+            <td>
+                {% for slot in timetable|default:""|dictsort:"start_time" %}
+                {% if slot.day == day_key and slot.start_time|time:"H:00" == time %}
+                <div class="p-2 bg-info text-white rounded mb-1">
+                    <strong>{{ slot.subject.name }}</strong><br>
+                    <small>{{ slot.class_obj.name }}</small>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </td>
+            {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="text-muted">Sélectionnez un enseignant pour voir son planning.</p>
+{% endif %}
+{% endblock %}

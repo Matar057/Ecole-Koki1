@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Prendre la présence - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Prendre la présence</h2>
+    <a href="{% url 'attendance:attendance_list' %}" class="btn btn-secondary" title="Retour">
+        <i class="bi bi-arrow-left me-1"></i>
+    </a>
+</div>
+<div class="card">
+    <div class="card-body">
+        <form method="post" id="attendanceForm">
+            {% csrf_token %}
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label>Sélectionner une classe</label>
+                    <select name="class_id" class="form-select" required onchange="loadStudents(this.value)">
+                        <option value="">-- Sélectionner une classe --</option>
+                        {% for c in classes %}<option value="{{ c.pk }}">{{ c.name }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">{{ form.date.label_tag }}{{ form.date }}</div>
+            </div>
+            <div id="studentList"></div>
+            <button type="submit" class="btn btn-primary mt-3" id="submitBtn" disabled>Enregistrer la présence</button>
+        </form>
+    </div>
+</div>
+<script>
+function loadStudents(classId) {
+    if (!classId) { document.getElementById('studentList').innerHTML = ''; document.getElementById('submitBtn').disabled = true; return; }
+    document.getElementById('studentList').innerHTML = '<p class="text-muted">Chargement des étudiants...</p>';
+    fetch(`/students/?class=${classId}`)
+        .then(r => r.json())
+        .then(data => {
+            let html = '<table class="table"><thead><tr><th>Étudiant</th><th>Présent</th><th>Absent</th><th>En retard</th><th>Excusé</th></tr></thead><tbody>';
+            data.forEach(s => {
+                html += `<tr><td>${s.name}</td>
+                    <td><input type="radio" name="attendance_${s.id}" value="present" checked></td>
+                    <td><input type="radio" name="attendance_${s.id}" value="absent"></td>
+                    <td><input type="radio" name="attendance_${s.id}" value="late"></td>
+                    <td><input type="radio" name="attendance_${s.id}" value="excused"></td></tr>`;
+            });
+            html += '</tbody></table>';
+            document.getElementById('studentList').innerHTML = html;
+            document.getElementById('submitBtn').disabled = false;
+        })
+        .catch(() => { document.getElementById('studentList').innerHTML = '<p class="text-danger">Erreur lors du chargement des étudiants.</p>'; });
+}
+</script>
+{% endblock %}

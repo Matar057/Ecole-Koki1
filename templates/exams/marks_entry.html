@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Saisir les notes - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Saisir les notes</h2>
+    <div>
+        <a href="{% url 'exams:marks_list' exam_subject.pk %}" class="btn btn-info" title="Voir les résultats"><i class="bi bi-eye me-1"></i></a>
+        <a href="{% url 'exams:marks_export' exam_subject.pk %}" class="btn btn-success" title="Exporter en Excel"><i class="bi bi-file-earmark-excel me-1"></i></a>
+        <a href="{% url 'exams:marks_import' exam_subject.pk %}" class="btn btn-warning" title="Importer depuis Excel"><i class="bi bi-upload me-1"></i></a>
+        <span class="badge bg-info ms-2">{{ exam_subject.subject }} - {{ exam_subject.class_obj }} (Max : {{ exam_subject.max_marks }})</span>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <table class="table">
+                <thead><tr><th>Étudiant</th><th>ID</th><th>Notes</th></tr></thead>
+                <tbody>
+                    {% for item in student_marks %}
+                    <tr>
+                        <td>{{ item.student.user.get_full_name }}</td>
+                        <td>{{ item.student.student_id }}</td>
+                        <td><input type="number" name="marks_{{ item.student.pk }}" class="form-control" value="{{ item.marks }}" max="{{ exam_subject.max_marks }}" min="0" step="0.01"></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3" class="text-center text-muted">Aucun étudiant dans cette classe.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-primary">Enregistrer les notes</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

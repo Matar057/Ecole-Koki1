@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}{{ teacher.user.get_full_name }} - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                {% if teacher.photo %}
+                <img src="{{ teacher.photo.url }}" class="rounded-circle mb-3" width="120" height="120">
+                {% else %}
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:120px;height:120px;font-size:3rem;">
+                    {{ teacher.user.first_name|first|upper }}{{ teacher.user.last_name|first|upper }}
+                </div>
+                {% endif %}
+                <h4>{{ teacher.user.get_full_name }}</h4>
+                <p class="text-muted">{{ teacher.teacher_id }}</p>
+            </div>
+        </div>
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6>Détails</h6>
+                <p class="mb-1"><strong>Qualification :</strong> {{ teacher.qualification|default:"-" }}</p>
+                <p class="mb-1"><strong>Expérience :</strong> {{ teacher.experience_years }} ans</p>
+                <p class="mb-1"><strong>Téléphone :</strong> {{ teacher.phone|default:"-" }}</p>
+                <p class="mb-1"><strong>Rejoint le :</strong> {{ teacher.joining_date|date:"d/m/Y"|default:"-" }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5>Matières assignées</h5>
+                <div class="mb-3">
+                    {% for s in teacher.subjects.all %}
+                    <span class="badge bg-primary me-2">{{ s.name }}</span>
+                    {% empty %}<p class="text-muted">Aucune matière assignée.</p>
+                    {% endfor %}
+                </div>
+                <h5>Classes assignées</h5>
+                <div class="mb-3">
+                    {% for c in teacher.classes_assigned.all %}
+                    <span class="badge bg-info me-2">{{ c.name }}</span>
+                    {% empty %}<p class="text-muted">Aucune classe assignée.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

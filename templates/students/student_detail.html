@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}{{ student.user.get_full_name }} - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Profil de l'étudiant</h2>
+    <div>
+        <a href="{% url 'students:student_edit' student.pk %}" class="btn btn-warning" title="Modifier"><i class="bi bi-pencil"></i></a>
+        <a href="{% url 'students:document_upload' student.pk %}" class="btn btn-info" title="Téléverser un document"><i class="bi bi-upload"></i></a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                {% if student.photo %}
+                <img src="{{ student.photo.url }}" class="rounded-circle mb-3" width="120" height="120">
+                {% else %}
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:120px;height:120px;font-size:3rem;">
+                    {{ student.user.first_name|first|upper }}{{ student.user.last_name|first|upper }}
+                </div>
+                {% endif %}
+                <h4>{{ student.user.get_full_name }}</h4>
+                <p class="text-muted">{{ student.student_id }}</p>
+                <span class="badge bg-{% if student.is_active %}success{% else %}secondary{% endif %}">{% if student.is_active %}Actif{% else %}Inactif{% endif %}</span>
+            </div>
+        </div>
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6>Info rapide</h6>
+                <p class="mb-1"><strong>Date de naissance :</strong> {{ student.date_of_birth|date:"d/m/Y" }}</p>
+                <p class="mb-1"><strong>Genre :</strong> {{ student.get_gender_display }}</p>
+                <p class="mb-1"><strong>Groupe sanguin :</strong> {{ student.blood_group|default:"-" }}</p>
+                <p class="mb-1"><strong>Admission :</strong> {{ student.admission_date|date:"d/m/Y" }}</p>
+                {% if attendance_rate %}
+                <p class="mb-1"><strong>Présence :</strong> {{ attendance_rate }}%</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5>Détails académiques</h5>
+                <table class="table">
+                    <tr><th>Classe</th><td>{{ student.class_enrolled|default:"Non assignée" }}</td></tr>
+                    <tr><th>Section</th><td>{{ student.section|default:"Non assignée" }}</td></tr>
+                </table>
+                <h5>Coordonnées</h5>
+                <table class="table">
+                    <tr><th>E-mail</th><td>{{ student.user.email }}</td></tr>
+                    <tr><th>Adresse</th><td>{{ student.address|default:"Non définie" }}</td></tr>
+                    <tr><th>Urgence</th><td>{{ student.emergency_contact|default:"Non défini" }}</td></tr>
+                </table>
+                {% if student.parent %}
+                <h5>Info parent</h5>
+                <table class="table">
+                    <tr><th>Nom</th><td>{{ student.parent.user.get_full_name }}</td></tr>
+                    <tr><th>Téléphone</th><td>{{ student.parent.phone|default:"-" }}</td></tr>
+                    <!-- <tr><th>E-mail</th><td>{{ student.parent.email|default:"-" }}</td></tr> -->
+                </table>
+                {% endif %}
+                {% if student.medical_notes %}
+                <h5>Notes médicales</h5>
+                <p>{{ student.medical_notes }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% if documents %}
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5>Documents</h5>
+                {% for doc in documents %}
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span>{{ doc.title }}</span>
+                    <a href="{{ doc.document.url }}" class="btn btn-sm btn-primary" download><i class="bi bi-download"></i></a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

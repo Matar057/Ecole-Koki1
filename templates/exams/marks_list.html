@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}Résultats - {{ exam_subject.subject }} - ELEMENTAIRE KOKI 1{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Résultats</h2>
+        <p class="text-muted mb-0">{{ exam_subject.subject }} - {{ exam_subject.class_obj }} - {{ exam_subject.exam.name }}</p>
+    </div>
+    <div>
+        <a href="{% url 'exams:marks_entry' exam_subject.pk %}" class="btn btn-primary" title="Saisir les notes"><i class="bi bi-pencil me-1"></i></a>
+        <a href="{% url 'exams:marks_export' exam_subject.pk %}" class="btn btn-success" title="Exporter en Excel"><i class="bi bi-file-earmark-excel me-1"></i></a>
+        <a href="{% url 'exams:marks_import' exam_subject.pk %}" class="btn btn-warning" title="Importer depuis Excel"><i class="bi bi-upload me-1"></i></a>
+        <a href="{% url 'exams:exam_detail' exam_subject.exam.pk %}" class="btn btn-secondary" title="Retour"><i class="bi bi-arrow-left me-1"></i></a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-primary">{{ marks_count }}/{{ total_students }}</h3>
+                <p class="mb-0 text-muted">Notes saisies</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-success">{{ avg_note10 }}/10</h3>
+                <p class="mb-0 text-muted">Moy. classe /10</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-info">5/10</h3>
+                <p class="mb-0 text-muted">Note de passage</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Rang</th>
+                    <th>Étudiant</th>
+                    <th>ID</th>
+                    <th>Note /10</th>
+                    <th>Mention</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mark in marks %}
+                {% with note10=mark.note_sur_10 %}
+                <tr>
+                    <td><strong>{{ forloop.counter }}</strong></td>
+                    <td>{{ mark.student.user.get_full_name }}</td>
+                    <td>{{ mark.student.student_id }}</td>
+                    <td><strong>{{ note10 }}</strong></td>
+                    <td><span class="badge bg-{% if mark.grade == 'TB' %}success{% elif mark.grade == 'B' %}info{% elif mark.grade == 'AB' %}primary{% elif mark.grade == 'P' %}warning{% else %}danger{% endif %}">{{ mark.grade }}</span></td>
+                    <td>
+                        {% if note10 >= 5 %}
+                            <span class="badge bg-success">Admis</span>
+                        {% else %}
+                            <span class="badge bg-danger">Non admis</span>
+                        {% endif %}
+                    </td>
+                {% endwith %}
+                    <td>
+                        <a href="{% url 'exams:mark_edit' mark.pk %}" class="btn btn-sm btn-warning" title="Modifier"><i class="bi bi-pencil"></i></a>
+                        <a href="{% url 'exams:mark_delete' mark.pk %}" class="btn btn-sm btn-danger" title="Supprimer"><i class="bi bi-trash"></i></a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center text-muted">Aucune note saisie pour cette matière.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
