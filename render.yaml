@@ -2,7 +2,7 @@ services:
   - type: web
     name: ecole-koki1
     env: python
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    buildCommand: pip install -r requirements.txt && python manage.py migrate --noinput && python manage.py collectstatic --noinput
     startCommand: gunicorn config.wsgi --bind 0.0.0.0:$PORT
     envVars:
       - key: SECRET_KEY
