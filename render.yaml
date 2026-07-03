@@ -26,12 +26,12 @@ services:
       - key: EMAIL_USE_TLS
         value: "True"
       - key: DATABASE_URL
-        fromService:
-          type: pgsql
-          name: ecole-koki1-db
-          property: connectionString
+#         fromService:
+#           type: pgsql
+#           name: ecole-koki1-db
+#           property: connectionString
 
-databases:
-  - type: pgsql
-    name: ecole-koki1-db
-    databaseName: ecole_koki1
+# databases:
+#   - type: pgsql
+#     name: ecole-koki1-db
+#     databaseName: ecole_koki1
